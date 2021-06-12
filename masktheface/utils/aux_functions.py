@@ -6,10 +6,10 @@ from configparser import ConfigParser
 import cv2, math, os
 from PIL import Image, ImageDraw
 from tqdm import tqdm
-from utils.read_cfg import read_cfg
-from utils.fit_ellipse import *
+from masktheface.utils.read_cfg import read_cfg
+from masktheface.utils.fit_ellipse import *
 import random
-from utils.create_mask import texture_the_mask, color_the_mask
+from masktheface.utils.create_mask import texture_the_mask, color_the_mask
 from imutils import face_utils
 import requests
 from zipfile import ZipFile
@@ -24,7 +24,7 @@ def download_dlib_model():
     with requests.get(dlib_model_link, stream=True) as r:
         print("Zip file size: ", np.round(len(r.content) / 1024 / 1024, 2), "MB")
         destination = (
-            "dlib_models" + os.path.sep + "shape_predictor_68_face_landmarks.dat.bz2"
+                "dlib_models" + os.path.sep + "shape_predictor_68_face_landmarks.dat.bz2"
         )
         if not os.path.exists(destination.rsplit(os.path.sep, 1)[0]):
             os.mkdir(destination.rsplit(os.path.sep, 1)[0])
@@ -34,7 +34,7 @@ def download_dlib_model():
                 fd.write(chunk)
     print("Extracting dlib model...")
     with bz2.BZ2File(destination) as fr, open(
-        "dlib_models/shape_predictor_68_face_landmarks.dat", "wb"
+            "dlib_models/shape_predictor_68_face_landmarks.dat", "wb"
     ) as fw:
         shutil.copyfileobj(fr, fw)
     print("Saved: ", destination)
@@ -59,7 +59,7 @@ def get_line(face_landmark, image, type="eye", debug=False):
 
     elif type == "nose_mid":
         nose_length = (
-            face_landmark["nose_bridge"][-1][1] - face_landmark["nose_bridge"][0][1]
+                face_landmark["nose_bridge"][-1][1] - face_landmark["nose_bridge"][0][1]
         )
         left_point = [left_eye_mid[0], left_eye_mid[1] + nose_length / 2]
         right_point = [right_eye_mid[0], right_eye_mid[1] + nose_length / 2]
@@ -68,22 +68,22 @@ def get_line(face_landmark, image, type="eye", debug=False):
         # ) / 2
 
         mid_pointY = (
-            face_landmark["nose_bridge"][-1][1] + face_landmark["nose_bridge"][0][1]
-        ) / 2
+                             face_landmark["nose_bridge"][-1][1] + face_landmark["nose_bridge"][0][1]
+                     ) / 2
         mid_pointX = (
-            face_landmark["nose_bridge"][-1][0] + face_landmark["nose_bridge"][0][0]
-        ) / 2
+                             face_landmark["nose_bridge"][-1][0] + face_landmark["nose_bridge"][0][0]
+                     ) / 2
         mid_point = (mid_pointX, mid_pointY)
 
     elif type == "nose_tip":
         nose_length = (
-            face_landmark["nose_bridge"][-1][1] - face_landmark["nose_bridge"][0][1]
+                face_landmark["nose_bridge"][-1][1] - face_landmark["nose_bridge"][0][1]
         )
         left_point = [left_eye_mid[0], left_eye_mid[1] + nose_length]
         right_point = [right_eye_mid[0], right_eye_mid[1] + nose_length]
         mid_point = (
-            face_landmark["nose_bridge"][-1][1] + face_landmark["nose_bridge"][0][1]
-        ) / 2
+                            face_landmark["nose_bridge"][-1][1] + face_landmark["nose_bridge"][0][1]
+                    ) / 2
 
     elif type == "bottom_lip":
         bottom_lip = face_landmark["bottom_lip"]
@@ -187,8 +187,8 @@ def line_intersection(line1, line2):
     segment_maxY = max(line2[0][1], line2[1][1])
 
     if (
-        segment_maxX + 1 >= x >= segment_minX - 1
-        and segment_maxY + 1 >= y >= segment_minY - 1
+            segment_maxX + 1 >= x >= segment_minX - 1
+            and segment_maxY + 1 >= y >= segment_minY - 1
     ):
         flag = True
 
@@ -303,8 +303,9 @@ def mask_face(image, face_location, six_points, angle, args, type="surgical"):
     # Read appropriate mask image
     w = image.shape[0]
     h = image.shape[1]
+    masks_cfg = "masktheface/masks/masks.cfg"
     if not "empty" in type and not "inpaint" in type:
-        cfg = read_cfg(config_filename="masks/masks.cfg", mask_type=type, verbose=False)
+        cfg = read_cfg(config_filename=masks_cfg, mask_type=type, verbose=False)
     else:
         if "left" in type:
             str = "surgical_blue_left"
@@ -312,7 +313,7 @@ def mask_face(image, face_location, six_points, angle, args, type="surgical"):
             str = "surgical_blue_right"
         else:
             str = "surgical_blue"
-        cfg = read_cfg(config_filename="masks/masks.cfg", mask_type=str, verbose=False)
+        cfg = read_cfg(config_filename=masks_cfg, mask_type=str, verbose=False)
     img = cv2.imread(cfg.template, cv2.IMREAD_UNCHANGED)
 
     # Process the mask if necessary
@@ -335,10 +336,10 @@ def mask_face(image, face_location, six_points, angle, args, type="surgical"):
     face_height = face_location[2] - face_location[0]
     face_width = face_location[1] - face_location[3]
     image_face = image[
-        face_location[0] + int(face_height / 2) : face_location[2],
-        face_location[3] : face_location[1],
-        :,
-    ]
+                 face_location[0] + int(face_height / 2): face_location[2],
+                 face_location[3]: face_location[1],
+                 :,
+                 ]
 
     image_face = image
 
@@ -571,6 +572,7 @@ def rect_to_bb(rect):
 def mask_image(image_path, args):
     # Read the image
     image = cv2.imread(image_path)
+    # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     original_image = image.copy()
     # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = image
@@ -643,15 +645,18 @@ def is_image(path):
         image_extensions = ["png", "PNG", "jpg", "JPG"]
 
         if extensions[1:] in image_extensions:
-            return True 
+            return True
         else:
             print("Please input image file. png / jpg")
-            return False 
-    except: 
-        return False 
+            return False
+    except:
+        return False
 
 
-def get_available_mask_types(config_filename="masks/masks.cfg"):
+KEEP_MASKS = ['surgical', 'cloth', 'N95', 'KN95']
+
+
+def get_available_mask_types(config_filename="masktheface/masks/masks.cfg", keep_masks=KEEP_MASKS):
     parser = ConfigParser()
     parser.optionxform = str
     parser.read(config_filename)
@@ -661,6 +666,10 @@ def get_available_mask_types(config_filename="masks/masks.cfg"):
     ]
     available_mask_types = [
         string for string in available_mask_types if "right" not in string
+    ]
+    if keep_masks is not None:
+        available_mask_types = [
+        string for string in available_mask_types if string in KEEP_MASKS
     ]
 
     return available_mask_types
@@ -677,7 +686,7 @@ def print_orderly(str, n):
 
 
 def display_MaskTheFace():
-    with open("utils/display.txt", "r") as file:
+    with open("masktheface/utils/display.txt", "r") as file:
         for line in file:
             cc = 1
             print(line, end="")
