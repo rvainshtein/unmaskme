@@ -2,22 +2,22 @@ import matplotlib.pyplot as plt
 
 from cyclegan.datasets.create_combined_mask_dataset import combine_dataset
 from masktheface.mask_the_face import prepare_args, do_masking
-from masktheface.utils.aux_functions import mask_image
 import shutil
 import os
 
 
-def flatten_dir(destination, depth=None):
+def flatten_dir(destination, depth=''):
     """
     taken from https://stackoverflow.com/questions/17547273/flatten-complex-directory-structure-in-python
     """
-    if not depth:
-        depth = []
-    for file_or_dir in os.listdir(os.path.join([destination] + depth, os.sep)):
+    current_depth = os.path.join(destination, depth)
+    for file_or_dir in os.listdir(current_depth):
+        file_or_dir = os.path.join(current_depth, file_or_dir)
         if os.path.isfile(file_or_dir):
-            shutil.move(file_or_dir, destination)
-        else:
-            flatten_dir(destination, os.path.join(depth + [file_or_dir], os.sep))
+            if depth:
+                shutil.move(file_or_dir, destination)
+            else:
+                flatten_dir(destination, os.path.join(depth, file_or_dir))
 
 
 def split_train_test(unmasked_data_dir, masked_data_dir, ratio=0.8):
