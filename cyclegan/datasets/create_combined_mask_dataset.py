@@ -5,13 +5,7 @@ import argparse
 from multiprocessing import Pool
 from dotmap import DotMap
 
-
-def image_write(path_A, path_B, path_AB):
-    im_A = cv2.imread(path_A, 1)  # python2: cv2.CV_LOAD_IMAGE_COLOR; python3: cv2.IMREAD_COLOR
-    im_B = cv2.imread(path_B, 1)  # python2: cv2.CV_LOAD_IMAGE_COLOR; python3: cv2.IMREAD_COLOR
-    im_AB = np.concatenate([im_A, im_B], 1)
-    cv2.imwrite(path_AB, im_AB)
-
+from cyclegan.datasets.combine_A_and_B import image_write
 
 """
 parser = argparse.ArgumentParser('create image pairs')
@@ -28,60 +22,62 @@ parser.add_argument('--no_multiprocessing', dest='no_multiprocessing',
 args = parser.parse_args()
 """
 
-args = DotMap()
-args.fold_A = r'../../data'
-args.fold_B = r'../../data_masked'
-args.fold_AB = r'../../data_combined'
-args.num_imgs = 1000000
 
-args.no_multiprocessing = True
+def combine_dataset(fold_A, fold_B, fold_AB):
+    args = DotMap()
+    args.fold_A = fold_A
+    args.fold_B = fold_B
+    args.fold_AB = fold_AB
+    args.num_imgs = 1000000
+    args.no_multiprocessing = True
+    for arg in vars(args):
+        print('[%s] = ' % arg, getattr(args, arg))
+    splits = os.listdir(args.fold_A)
+    if not args.no_multiprocessing:
+        pool = Pool()
+    for sp in splits:
+        img_fold_A = os.path.join(args.fold_A, sp)
+        img_fold_B = os.path.join(args.fold_B, sp)
+        img_list = os.listdir(img_fold_A)
+        masked_image_list = os.listdir(img_fold_B)
 
-for arg in vars(args):
-    print('[%s] = ' % arg, getattr(args, arg))
-
-splits = os.listdir(args.fold_A)
-
-if not args.no_multiprocessing:
-    pool = Pool()
-
-for sp in splits:
-    img_fold_A = os.path.join(args.fold_A, sp)
-    img_fold_B = os.path.join(args.fold_B, sp)
-    img_list = os.listdir(img_fold_A)
-    masked_image_list = os.listdir(img_fold_B)
-
-    if args.use_AB:
-        img_list = [img_path for img_path in img_list if '_A.' in img_path]
-
-    num_imgs = min(args.num_imgs, len(img_list))
-    print('split = %s, use %d/%d images' % (sp, num_imgs, len(img_list)))
-    img_fold_AB = os.path.join(args.fold_AB, sp)
-    if not os.path.isdir(img_fold_AB):
-        os.makedirs(img_fold_AB)
-    print('split = %s, number of images = %d' % (sp, num_imgs))
-    for n in range(num_imgs):
-        name_A = img_list[n]
-        path_A = os.path.join(img_fold_A, name_A)
         if args.use_AB:
-            name_B = name_A.replace('_A.', '_B.')
-        else:
-            name_B = name_A
-        filename_B = [f for f in masked_image_list if name_B.split('.')[0] in f]
-        if not len(filename_B):
-            continue
-        path_B = os.path.join(img_fold_B, filename_B[0])
-        if os.path.isfile(path_A) and os.path.isfile(path_B):
-            name_AB = name_A
+            img_list = [img_path for img_path in img_list if '_A.' in img_path]
+
+        num_imgs = min(args.num_imgs, len(img_list))
+        print('split = %s, use %d/%d images' % (sp, num_imgs, len(img_list)))
+        img_fold_AB = os.path.join(args.fold_AB, sp)
+        if not os.path.isdir(img_fold_AB):
+            os.makedirs(img_fold_AB)
+        print('split = %s, number of images = %d' % (sp, num_imgs))
+        for n in range(num_imgs):
+            name_A = img_list[n]
+            path_A = os.path.join(img_fold_A, name_A)
             if args.use_AB:
-                name_AB = name_AB.replace('_A.', '.')  # remove _A
-            path_AB = os.path.join(img_fold_AB, name_AB)
-            if not args.no_multiprocessing:
-                pool.apply_async(image_write, args=(path_A, path_B, path_AB))
+                name_B = name_A.replace('_A.', '_B.')
             else:
-                im_A = cv2.imread(path_A, 1)  # python2: cv2.CV_LOAD_IMAGE_COLOR; python3: cv2.IMREAD_COLOR
-                im_B = cv2.imread(path_B, 1)  # python2: cv2.CV_LOAD_IMAGE_COLOR; python3: cv2.IMREAD_COLOR
-                im_AB = np.concatenate([im_A, im_B], 1)
-                cv2.imwrite(path_AB, im_AB)
-if not args.no_multiprocessing:
-    pool.close()
-    pool.join()
+                name_B = name_A
+            filename_B = [f for f in masked_image_list if name_B.split('.')[0] in f]
+            if not len(filename_B):
+                continue
+            path_B = os.path.join(img_fold_B, filename_B[0])
+            if os.path.isfile(path_A) and os.path.isfile(path_B):
+                name_AB = name_A
+                if args.use_AB:
+                    name_AB = name_AB.replace('_A.', '.')  # remove _A
+                path_AB = os.path.join(img_fold_AB, name_AB)
+                if not args.no_multiprocessing:
+                    pool.apply_async(image_write, args=(path_A, path_B, path_AB))
+                else:
+                    im_A = cv2.imread(path_A, 1)  # python2: cv2.CV_LOAD_IMAGE_COLOR; python3: cv2.IMREAD_COLOR
+                    im_B = cv2.imread(path_B, 1)  # python2: cv2.CV_LOAD_IMAGE_COLOR; python3: cv2.IMREAD_COLOR
+                    im_AB = np.concatenate([im_A, im_B], 1)
+                    cv2.imwrite(path_AB, im_AB)
+    if not args.no_multiprocessing:
+        pool.close()
+        pool.join()
+
+
+combine_dataset(fold_A=r'../../data',
+                fold_B=r'../../data_masked',
+                fold_AB=r'../../data_combined')
