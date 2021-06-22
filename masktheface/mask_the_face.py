@@ -15,8 +15,8 @@ def prepare_args(path, verbose=True, mask_type='random'):
     args.mask_type = mask_type
     args.pattern = ''
     args.pattern_weight = 0.5
-    # args.color = "#0473e2"
-    # args.color_weight = 0.5
+    args.color = "#0473e2"
+    args.color_weight = 0.5
     args.code = ''  # "cloth-masks/textures/check/check_4.jpg, cloth-#e54294, cloth-#ff0000, cloth, cloth-masks/textures/others/heart_1.png, cloth-masks/textures/fruits/pineapple.png, N95, surgical_blue, surgical_green"
     args.verbose = verbose
     args.write_original_image = False

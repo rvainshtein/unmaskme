@@ -7,17 +7,28 @@ import shutil
 import os
 
 
-def flatten_dir(destination, depth=None):
+def flatten_dir(source, depth=None, output_dir=None):
     """
     taken from https://stackoverflow.com/questions/17547273/flatten-complex-directory-structure-in-python
+    with bugfixes
     """
+    if output_dir is None:
+        output_dir = source
+    else:
+        os.makedirs(output_dir, exist_ok=True)
     if not depth:
-        depth = []
-    for file_or_dir in os.listdir(os.path.join([destination] + depth, os.sep)):
-        if os.path.isfile(file_or_dir):
-            shutil.move(file_or_dir, destination)
+        depth = ''
+    curr_dir = os.path.join(source, depth)
+    for file_or_dir in os.listdir(curr_dir):
+        curr_path = os.path.join(curr_dir, file_or_dir)
+        if os.path.isfile(curr_path):
+            shutil.move(curr_path, output_dir)
         else:
-            flatten_dir(destination, os.path.join(depth + [file_or_dir], os.sep))
+            flatten_dir(source, os.path.join(depth, file_or_dir))
+    for file_or_dir in os.listdir(curr_dir):
+        curr_path = os.path.join(curr_dir, file_or_dir)
+        if os.path.isdir(curr_path):
+            os.rmdir(curr_path)
 
 
 def split_train_test(unmasked_data_dir, masked_data_dir, ratio=0.8):
@@ -48,23 +59,23 @@ def move_subset_files(file_names, dir, subset):
 
 
 # define dirs
-data_root = 'data_root'
-ffhq_root = 'data_root/ffhq_data'
+data_root = r'data_root\output_mock'
+ffhq_root = r'data_root\mock'
 
 # extract images from subdirs
-flatten_dir(ffhq_root)
+flattened_dir = r'data_root\flattened'
+flatten_dir(ffhq_root, output_dir=flattened_dir)
 
 # create masked images
-# masked images will be under '{unmasked_data_dir}_masked'
-unmasked_data_dir = 'ffhq_data'
-args = prepare_args(f'{unmasked_data_dir}', verbose=False)
+# masked images will be under '{flattened_dir}_masked'
+args = prepare_args(flattened_dir, verbose=False)
 
 do_masking(args)
 
 # now we split train_test
-masked_data_dir = ffhq_root + '_masked'
-split_train_test(ffhq_root, masked_data_dir, ratio=0.8)
+masked_data_dir = flattened_dir + '_masked'
+split_train_test(flattened_dir, masked_data_dir, ratio=0.8)
 
 # create aligned dataset
 combined_data_dir = os.path.join(data_root, 'data_combined')
-combine_dataset(ffhq_root, masked_data_dir, combined_data_dir)
+combine_dataset(flattened_dir, masked_data_dir, combined_data_dir)

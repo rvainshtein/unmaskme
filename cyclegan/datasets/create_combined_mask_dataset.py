@@ -78,6 +78,7 @@ def combine_dataset(fold_A, fold_B, fold_AB):
         pool.join()
 
 
-combine_dataset(fold_A=r'../../data',
-                fold_B=r'../../data_masked',
-                fold_AB=r'../../data_combined')
+if __name__ == '__main__':
+    combine_dataset(fold_A=r'..\..\data',
+                    fold_B=r'..\..\data_masked',
+                    fold_AB=r'..\..\data_combined')
