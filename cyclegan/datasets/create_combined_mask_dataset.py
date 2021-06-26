@@ -71,7 +71,7 @@ def combine_dataset(fold_A, fold_B, fold_AB):
                 else:
                     im_A = cv2.imread(path_A, 1)  # python2: cv2.CV_LOAD_IMAGE_COLOR; python3: cv2.IMREAD_COLOR
                     im_B = cv2.imread(path_B, 1)  # python2: cv2.CV_LOAD_IMAGE_COLOR; python3: cv2.IMREAD_COLOR
-                    im_AB = np.concatenate([im_A, im_B], 1)
+                    im_AB = np.concatenate([im_B, im_A], 1)
                     cv2.imwrite(path_AB, im_AB)
     if not args.no_multiprocessing:
         pool.close()
