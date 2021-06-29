@@ -20,12 +20,12 @@ Download FFHQ thumbnails 128x128 data from this
 Our pretrained model can be found [here]()
 
 #### Training script
-```python
-
+```
+python train.py --dataroot ./datasets/maskface/data_combined --model pix2pix --name face2mask --print_freq 50 --num_threads 12
 ```
 ### Inference
-```python
-
+```
+python test.py --dataroot ./../our_data/data_combined --model pix2pix --name face2mask --direction BtoA --results_dir ./results/
 ```
 
 ## Useful resources
