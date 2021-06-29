@@ -1,12 +1,34 @@
-# unmaskme
-## TODO
-Data (masktheface):
-- [X] run and generate images 
-- [X] download the full data from drive (128x128)
-- [ ] run on the full data and generate the train set
-- [ ] integrate on the fly into training?
+# UnmaskMe
+-[ ] insert sample image here
 
-Generation (cyclegan or something else?):
-- [ ] run inference on example data
-- [ ] train on a dataset that was already trained on
-- [ ] train on our data
+## What is UnmaskMe
+
+## Installation
+To install requirements simply run this within the project root: 
+```
+pip install -r requirements.txt 
+```
+
+## Usage
+
+### Training
+#### Generating The Dataset
+Download FFHQ thumbnails 128x128 data from this
+[link](https://archive.org/download/ffhq-dataset/thumbnails128x128.zip).
+
+#### Pretraing model
+Our pretrained model can be found [here]()
+
+#### Training script
+```python
+
+```
+### Inference
+```python
+
+```
+
+## Useful resources
+- CycleGAN & pix2pix [repo](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
+- MaskTheFace [repo](https://github.com/aqeelanwar/MaskTheFace)
+
