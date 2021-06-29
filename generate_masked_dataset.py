@@ -1,10 +1,9 @@
-import matplotlib.pyplot as plt
+import argparse
+import os
+import shutil
 
 from cyclegan.datasets.create_combined_mask_dataset import combine_dataset
 from masktheface.mask_the_face import prepare_args, do_masking
-from masktheface.utils.aux_functions import mask_image
-import shutil
-import os
 
 
 def flatten_dir(source, depth=None, output_dir=None):
@@ -58,24 +57,37 @@ def move_subset_files(file_names, dir, subset):
             shutil.move(orig_file_path, os.path.join(dir, subset, f))
 
 
-# define dirs
-data_root = r'data_root\output_mock'
-ffhq_root = r'data_root\mock'
+def get_args():
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--ffhq-root', help='FFHQ facedataset images dir.', required=True)
+    parser.add_argument('--flattened-dir', help='for extracting images from FFHQ sub dirs.')
+    parser.add_argument('--masked-data-dir', help='for saving masked face images.')
+    parser.add_argument('--combined-data-dir', help='for final result.', required=True)
+    parser.add_argument('--train-test-ratio', help='percentage of train set from all dataset', default=0.8)
 
-# extract images from subdirs
-flattened_dir = r'data_root\flattened'
-flatten_dir(ffhq_root, output_dir=flattened_dir)
+    args = parser.parse_args()
+    if args.flattened_dir is None:
+        args.flattened_dir = os.path.join(args.ffhq_root, 'flattened')
+    if args.masked_data_dir is None:
+        args.masked_data_dir = args.flattened_dir + '_masked'
+    return args
 
-# create masked images
-# masked images will be under '{flattened_dir}_masked'
-args = prepare_args(flattened_dir, verbose=False)
 
-do_masking(args)
+if __name__ == '__main__':
+    # define dirs
+    args = get_args()
 
-# now we split train_test
-masked_data_dir = flattened_dir + '_masked'
-split_train_test(flattened_dir, masked_data_dir, ratio=0.8)
+    # extract images from subdirs
+    flatten_dir(args.ffhq_root, output_dir=args.flattened_dir)
 
-# create aligned dataset
-combined_data_dir = os.path.join(data_root, 'data_combined')
-combine_dataset(flattened_dir, masked_data_dir, combined_data_dir)
+    # create masked images
+    # masked images will be under '{flattened_dir}_masked'
+    args = prepare_args(args.flattened_dir, verbose=False)
+
+    do_masking(args)
+
+    # now we split train_test
+    split_train_test(args.flattened_dir, args.masked_data_dir, ratio=args.train_test_ratio)
+
+    # create aligned dataset
+    combine_dataset(args.flattened_dir, args.masked_data_dir, args.combined_data_dir)
