@@ -110,6 +110,6 @@ see [link to options](https://github.com/rvainshtein/unmaskme/blob/77d18a082daab
 
 - [CycleGAN & pix2pix repo](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
 - [pix2pix paper](https://arxiv.org/pdf/1611.07004)
-- [CycleGAN paper](\https://arxiv.org/pdf/1703.10593)
+- [CycleGAN paper](https://arxiv.org/pdf/1703.10593)
 - [MaskTheFace repo](https://github.com/aqeelanwar/MaskTheFace)
 
