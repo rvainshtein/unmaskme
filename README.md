@@ -3,6 +3,7 @@
 ![result](resources/result.png)
 
 ## Motivation
+
 ![motivation](resources/motivation.png)
 
 Covid-19 was introduced to the world on March 19 and ever since people are wearing masks in their daily life. It has
@@ -28,6 +29,28 @@ To install requirements simply run this within the project root:
 ```
 pip install -r requirements.txt 
 ```
+
+Prerequisites are
+
+| Package | Relation | Version |
+| ------- | -------- | ------- |
+| certifi | == | 2020.4.5.1 |
+| click | == | 7.1.2 |
+| dlib | == | 19.19.0 |
+| dotmap | == | 1.3.14 |
+| face-recognition | == | 1.3.0 |
+| face-recognition-models | == | 0.3.0 |
+| numpy | == | 1.18.4 |
+| opencv-python | == | 4.2.0.34 |
+| Pillow | == | 7.1.2 |
+| tqdm | == | 4.46.0 |
+| wincertstore | == | 0.2 |
+| imutils | == | 0.5.3 |
+| requests | == | 2.24.0 |
+| torch | \>= | 1.4.0 |
+| torchvision | \>= | 0.5.0 |
+| dominate | \>= | 2.4.0 |
+| visdom | \>= | 0.1.8.8 |
 
 ## Usage
 
@@ -71,6 +94,8 @@ see [link to options](https://github.com/rvainshtein/unmaskme/blob/77d18a082daab
 
 ### Inference
 
+#### Results on Test Set
+
 From cyclegan dir run:
 
 ```
@@ -82,6 +107,7 @@ see [link to options](https://github.com/rvainshtein/unmaskme/blob/77d18a082daab
 .
 
 ## References
+
 - [CycleGAN & pix2pix repo](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
 - [pix2pix paper](https://arxiv.org/pdf/1611.07004)
 - [CycleGAN paper](\https://arxiv.org/pdf/1703.10593)
