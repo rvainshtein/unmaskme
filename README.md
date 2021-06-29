@@ -4,6 +4,7 @@
 
 ## Motivation
 ![motivation](resources/motivation.png)
+
 Covid-19 was introduced to the world on March 19 and ever since people are wearing masks in their daily life. It has
 become more common to see a masked face than an uncovered smiling face as we used to before. As a result, lots of the
 photos taken today are of masked people, instead of normal faces as we know and love.
