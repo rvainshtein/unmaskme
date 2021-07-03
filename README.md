@@ -96,10 +96,18 @@ see [link to options](https://github.com/rvainshtein/unmaskme/blob/77d18a082daab
 
 #### Results on Test Set
 
+The test set has been aligned and prepared using the same script as training data.
+
 From cyclegan dir run:
 
 ```
 python test.py --dataroot \path\to\generated\data\dir --model pix2pix --name face2mask --direction BtoA --results_dir ./results/
+```
+
+For inference on a single image run with flag `--dataset_mode single`
+
+```
+python test.py --dataroot \path\to\generated\data\dir --dataset_mode single --model pix2pix --name face2mask --direction BtoA --results_dir ./results/
 ```
 
 For a detailed explanation on parameters
