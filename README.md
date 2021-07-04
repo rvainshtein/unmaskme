@@ -78,7 +78,10 @@ python generate_masked_dataset.py --ffhq-root path\to\download\dir --combined-dc
 
 #### Pretraing model
 
-Our pretrained model can be found [here]()
+Our pretrained model can be found [here](https://drive.google.com/drive/folders/1WYp1e0RbV6uLFKsZyC9mpHSF2wmGAc1g?usp=sharing).
+
+Download the files and extract them into `cyclegan/checkpoints/face2mask`
+under the names `latest_net_D.pth` & `latest_net_G.pth` accordingly.
 
 #### Training script
 
@@ -104,13 +107,14 @@ From cyclegan dir run:
 python test.py --dataroot \path\to\generated\data\dir --model pix2pix --name face2mask --direction BtoA --results_dir ./results/
 ```
 
-For inference on a single image run with flag `--dataset_mode single`
+For inference on a single image run with flag `--dataset_mode single` and `--phase=`. Also make sure your data is in a folder that is under `dataroot` with the name `test`.
 
+Now run from cyclegan dir:
 ```
-python test.py --dataroot \path\to\generated\data\dir --dataset_mode single --model pix2pix --name face2mask --direction BtoA --results_dir ./results/
+python test.py --dataroot \path\to\data\dir --dataset_mode single --model pix2pix --name face2mask --direction BtoA --phase=
 ```
 
-For a detailed explanation on parameters
+For a comprehensive explanation on parameters
 see [link to options](https://github.com/rvainshtein/unmaskme/blob/77d18a082daabe2cbf695956f0741ff15bf90dc7/cyclegan/options/base_options.py#L20)
 .
 
