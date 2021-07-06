@@ -114,6 +114,11 @@ Now run from cyclegan dir:
 python test.py --dataroot \path\to\data\dir --dataset_mode single --model pix2pix --name face2mask --direction BtoA --phase=
 ```
 
+### *important notes*
+- add flag `--calc_mse` to print the MSE loss over all test set when you use paired data
+- add flag `--num_test=NUM` where NUM is the limit of number images you want to test on (defaults to `50`)
+- flag `--phase` relates to the subdir under dataroot on which we want to operate
+
 For a comprehensive explanation on parameters
 see [link to options](https://github.com/rvainshtein/unmaskme/blob/77d18a082daabe2cbf695956f0741ff15bf90dc7/cyclegan/options/base_options.py#L20)
 .
